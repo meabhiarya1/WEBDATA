@@ -1,0 +1,11 @@
+.correction {
+    margin: 0;
+    padding: 0;
+    width: 100dvw;
+    min-height: 100dvh;
+    /* background-image: url("../../assets/images/csvcompare.jpg"); */
+    background-size: cover; /* This will make the background image cover the entire container */
+    background-position: center;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
