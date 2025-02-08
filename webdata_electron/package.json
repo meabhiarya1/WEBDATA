@@ -1,0 +1,61 @@
+{
+  "name": "webdata_electron",
+  "productName": "webdata_electron",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.6.1",
+    "@electron-forge/maker-deb": "^7.6.1",
+    "@electron-forge/maker-rpm": "^7.6.1",
+    "@electron-forge/maker-squirrel": "^7.6.1",
+    "@electron-forge/maker-zip": "^7.6.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
+    "@electron-forge/plugin-fuses": "^7.6.1",
+    "@electron/fuses": "^1.8.0",
+    "electron": "34.1.1"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Kumar Gaurav",
+    "email": "76562785+krgarav@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "adm-zip": "^0.5.15",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "busboy": "^1.6.0",
+    "connect-timeout": "^1.9.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fast-csv": "^5.0.1",
+    "fs-extra": "^11.2.0",
+    "jimp": "^0.22.12",
+    "json2csv": "^6.0.0-alpha.2",
+    "jsonwebtoken": "^9.0.2",
+    "jszip": "^3.10.1",
+    "lru-cache": "^11.0.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.9.4",
+    "node-unrar-js": "^2.0.2",
+    "nodemon": "^3.1.0",
+    "sequelize": "^6.37.3",
+    "sharp": "^0.33.3",
+    "socket.io": "^4.7.5",
+    "unzipper": "^0.11.5",
+    "xlsx": "^0.18.5"
+  }
+}
