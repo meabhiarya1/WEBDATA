@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { FaCloudDownloadAlt, FaRegEdit } from "react-icons/fa";
 import DeactivateModal from "../../components/DeactivateModal";
-
+import { MdOutlineTaskAlt } from "react-icons/md";
+import axios from "axios";
+import { REACT_APP_IP } from "../../services/common";
 const AdminCompareTasks = ({
   compareTask,
   onCompareTaskStartHandler,
@@ -12,9 +14,24 @@ const AdminCompareTasks = ({
 }) => {
   const [modals, setModals] = useState(false);
   const [taskId, setTaskId] = useState(null);
+  const token = JSON.parse(localStorage.getItem("userData"));
   // const modalClose = () => {
   //   setModals(false);
   // };
+  const completeHandler=async(taskId)=>{
+
+    const response = await axios.get(
+      `http://${REACT_APP_IP}:4000/submitTask/${taskId}`,
+      {
+        headers: {
+          token: token,
+        },
+      }
+    );
+   
+    console.log(response);
+  }  
+
   return (
     <div>
       {modals && (
@@ -132,6 +149,14 @@ const AdminCompareTasks = ({
           >
             <button className="rounded border border-indigo-500 bg-indigo-500 px-4 py-1 font-semibold text-white">
               <FaRegEdit />
+            </button>
+          </div>
+          <div
+            onClick={()=>completeHandler(taskData.id)}
+            className="whitespace-nowrap text-center w-[100px] py-2"
+          >
+            <button className="rounded border border-indigo-500 bg-indigo-500 px-4 py-1 font-semibold text-white">
+              <MdOutlineTaskAlt />
             </button>
           </div>
         </div>

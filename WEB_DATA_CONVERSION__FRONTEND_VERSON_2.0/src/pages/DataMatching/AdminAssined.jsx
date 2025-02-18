@@ -137,6 +137,7 @@ const AdminAssined = () => {
       .join("\n");
     return csvHeader + csvData;
   };
+
   const onCompareTaskStartHandler = (taskData) => {
     const sendReq = async () => {
       try {
@@ -412,6 +413,9 @@ const AdminAssined = () => {
                         <div className="py-3 text-center text font-semibold text-gray-700 w-[100px]">
                           Edit
                         </div>
+                        <div className="py-3 text-center text font-semibold text-gray-700 w-[100px]">
+                          Complete
+                        </div>  
                       </div>
                     </div>
                     <div className="divide-y divide-gray-200 bg-white overflow-y-auto h-[250px] ">
@@ -423,6 +427,7 @@ const AdminAssined = () => {
                         onCompleteHandler={onCompleteHandler}
                         setTaskEdit={setTaskEdit}
                         matchingTask={matchingTask}
+                        setMatchingTask={setMatchingTask}
                         onDownloadHandler={onDownloadHandler}
                         setTaskEditId={setTaskEditId}
                         taskType={taskType}

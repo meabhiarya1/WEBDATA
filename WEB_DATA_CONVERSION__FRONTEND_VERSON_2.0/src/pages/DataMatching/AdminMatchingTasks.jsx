@@ -1,6 +1,9 @@
 import React from "react";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { FaCloudDownloadAlt, FaRegEdit } from "react-icons/fa";
+import { MdOutlineTaskAlt } from "react-icons/md";
+import axios from "axios";
+import { REACT_APP_IP } from "../../services/common";
 
 const AdminMatchingTasks = ({
   onCompleteHandler,
@@ -9,9 +12,27 @@ const AdminMatchingTasks = ({
   setTaskEdit,
   setTaskEditId,
   taskType,
-  selectedDate
+  selectedDate,
+  setMatchingTask
 }) => {
-
+  const token = JSON.parse(localStorage.getItem("userData"));
+  const completeHandler=async(taskId)=>{
+        const response = await axios.get(
+          `http://${REACT_APP_IP}:4000/submitTask/${taskId}`,
+          {
+            headers: {
+              token: token,
+            },
+          }
+        );
+        setMatchingTask((prev) => prev.map((task) => {
+          if(task.id == taskId) {
+             return {...task, taskStatus: true}
+          }
+          return task;
+        }));
+        console.log(response);
+      } 
   const onFilteredTasksHandler = (tasks) => {
     
     let filterdTaskData = tasks;
@@ -139,6 +160,14 @@ const AdminMatchingTasks = ({
           >
             <button className="rounded border border-indigo-500 bg-indigo-500 px-4 py-1 font-semibold text-white">
               <FaRegEdit />
+            </button>
+          </div>
+          <div
+           onClick={()=>completeHandler(taskData.id)}
+            className="whitespace-nowrap text-center w-[100px] py-2"
+          >
+            <button className="rounded border border-indigo-500 bg-indigo-500 px-4 py-1 font-semibold text-white">
+            <MdOutlineTaskAlt />
             </button>
           </div>
         </div>
