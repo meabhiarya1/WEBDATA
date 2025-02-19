@@ -132,22 +132,24 @@ const compareCsv = async (req, res) => {
         });
       }
     }
-
+console.log(f1[0])
     for (let i = 0; i < f1.length; i++) {
       for (let j = 0; j < f2.length; j++) {
-        const pkLength = f1[i][primaryKey].length;
-        const str = " ".repeat(pkLength);
+        // const pkLength = f1[i][primaryKey];
+        // const str = " ".repeat(pkLength);
 
         if (
-          f1[i][primaryKey] === f2[j][primaryKey] &&
-          f1[i][primaryKey] !== str &&
-          f2[j][primaryKey] !== str
+          f1[i][primaryKey] === f2[j][primaryKey] 
+          // f1[i][primaryKey] !== str &&
+          // f2[j][primaryKey] !== str
         ) {
          
           for (let [key, value] of Object.entries(f1[i])) {
             const val1 = value;
             const val2 = f2[j][key];
+            console.log(f1[i])
             const imgPathArr = f1[i][imageColName]?.split("\\");
+            console.log(imgPathArr)
             const imgName = imgPathArr[imgPathArr.length - 1];
 
             if (
