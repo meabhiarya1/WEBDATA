@@ -7,6 +7,41 @@ function isBlank(str) {
   return !str.trim().length;
 }
 
+function checkHeadersMatch(json1, json2, skippingHeaders = []) {
+  if (!json1.length || !json2.length) {
+    return { match: false, message: "One or both JSON files are empty." };
+  }
+
+  // Extract headers from the first object of each JSON file
+  let headers1 = Object.keys(json1[0]);
+  let headers2 = Object.keys(json2[0]);
+
+  // Filter out headers that should be skipped
+  headers1 = headers1.filter((header) => !skippingHeaders.includes(header));
+  headers2 = headers2.filter((header) => !skippingHeaders.includes(header));
+
+  // Find missing or extra headers
+  const missingInJson2 = headers1.filter(
+    (header) => !headers2.includes(header)
+  );
+  const missingInJson1 = headers2.filter(
+    (header) => !headers1.includes(header)
+  );
+
+  if (missingInJson1.length === 0 && missingInJson2.length === 0) {
+    return { match: true, message: "Headers match ✅" };
+  }
+
+  return {
+    match: false,
+    message: `Headers do not match ❌=> File 1 : ${missingInJson2} => File 2 : ${missingInJson1}`,
+    details: {
+      missingInJson2, // Headers present in json1 but missing in json2
+      missingInJson1, // Headers present in json2 but missing in json1
+    },
+  };
+}
+
 // Function to group and sort by PRIMARY key
 function groupByPrimaryKey(arr) {
   const grouped = {};
@@ -48,7 +83,6 @@ const compareCsv = async (req, res) => {
       zipImageFile,
     } = req.body;
 
-
     const firstFilePath = path.join(
       __dirname,
       "../",
@@ -67,16 +101,18 @@ const compareCsv = async (req, res) => {
     // console.log("file name" ,secondFilePath, "secondInputFileName")
     const f1 = await csvToJson(firstFilePath);
     const f2 = await csvToJson(secondFilePath);
-    
-    f2.splice(0,1);
-    console.log(f2[0])
-    // console.log(primaryKey, "primary key");
+
+    f2.splice(0, 1);
+
+    if (checkHeadersMatch(f1, f2, skippingKey).match === false) {
+      return res.status(501).send({
+        err: checkHeadersMatch(f1, f2, skippingKey).message,
+        details: checkHeadersMatch(f1, f2, skippingKey).details,
+      });
+    }
     const diff = [];
 
     // Logging for debugging
-    // console.log("First CSV data:", f1);
-    // console.log("Second CSV data:", f2[1][primaryKey]);
-    // console.log(f1,"f1")
     for (let i = 0; i < f1.length; i++) {
       if (isBlank(f1[i][primaryKey])) {
         return res
@@ -86,10 +122,14 @@ const compareCsv = async (req, res) => {
     }
 
     for (let j = 0; j < f2.length; j++) {
+      if (f2[j][primaryKey] === undefined) {
+        console.log(j);
+      }
       if (isBlank(f2[j][primaryKey])) {
-        return res
-          .status(501)
-          .send({ err: "Primary key cannot be blank in the second CSV file",f2 });
+        return res.status(501).send({
+          err: "Primary key cannot be blank in the second CSV file",
+          f2,
+        });
       }
     }
 
@@ -103,6 +143,7 @@ const compareCsv = async (req, res) => {
           f1[i][primaryKey] !== str &&
           f2[j][primaryKey] !== str
         ) {
+         
           for (let [key, value] of Object.entries(f1[i])) {
             const val1 = value;
             const val2 = f2[j][key];
@@ -147,7 +188,13 @@ const compareCsv = async (req, res) => {
         }
       }
     }
-
+    console.log("diff", diff);
+    if (diff.length === 0) {
+        return res.status(501).send({
+          err: "No differences found between the two CSV files.",
+        })
+    
+    }
     const csvData = parse(diff);
     const correctedCsv = parse(f1);
 
@@ -214,13 +261,13 @@ const compareCsv = async (req, res) => {
       errorFilePath: errorFilePath,
       correctedFilePath: correctionFilePath,
       imageDirectoryName: zipImageFile,
-      file1:f1,
-      file2:f2
+      file1: f1,
+      file2: f2,
     });
   } catch (err) {
+    console.error("Error comparing CSV files:", err);
     res.status(501).send({ error: err.message });
   }
 };
 
 module.exports = compareCsv;
-  

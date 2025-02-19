@@ -23,8 +23,6 @@ const upload = multer({
     limits: undefined
 }).fields([
     { name: "firstInputCsvFile", maxCount: 1 },
-    // { name: "secondInputCsvFile", maxCount: 1 },
-    // { name: 'zipImageFile', maxCount: 1 }
 ]);
 const uploadCsv = async (req, res, next) => {
     const userPermissions = req.permissions
@@ -77,30 +75,30 @@ const uploadCsv = async (req, res, next) => {
         //             });
         //     });
         // };
-        const extractZipFile = (zipFilePath) => {
-            return new Promise((resolve, reject) => {
-                fs.createReadStream(zipFilePath)
-                    .pipe(unzipper.Parse())
-                    .on('entry', (entry) => {
-                        const fileName = entry.path;
-                        const destinationPath = path.join(omrImages, path.basename(fileName));
+        // const extractZipFile = (zipFilePath) => {
+        //     return new Promise((resolve, reject) => {
+        //         fs.createReadStream(zipFilePath)
+        //             .pipe(unzipper.Parse())
+        //             .on('entry', (entry) => {
+        //                 const fileName = entry.path;
+        //                 const destinationPath = path.join(omrImages, path.basename(fileName));
 
-                        if (entry.type === 'File') {
-                            entry.pipe(fs.createWriteStream(destinationPath));
-                        } else if (entry.type === 'Directory') {
-                            fs.mkdirSync(destinationPath, { recursive: true });
-                        }
-                    })
-                    .on('error', (error) => {
-                        console.error('Error extracting zip file:', error);
-                        reject(error);
-                    })
-                    .on('close', () => {
-                        console.log('Zip file extracted successfully.');
-                        resolve();
-                    });
-            });
-        };
+        //                 if (entry.type === 'File') {
+        //                     entry.pipe(fs.createWriteStream(destinationPath));
+        //                 } else if (entry.type === 'Directory') {
+        //                     fs.mkdirSync(destinationPath, { recursive: true });
+        //                 }
+        //             })
+        //             .on('error', (error) => {
+        //                 console.error('Error extracting zip file:', error);
+        //                 reject(error);
+        //             })
+        //             .on('close', () => {
+        //                 console.log('Zip file extracted successfully.');
+        //                 resolve();
+        //             });
+        //     });
+        // };
 
         // if (zipImageFile) {
 

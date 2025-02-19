@@ -5,8 +5,9 @@ import {
   onGetTemplateHandler,
   fetchFilesAssociatedWithTemplate,
   onGetAllTasksHandler,
+  REACT_APP_IP,
 } from "../services/common";
-
+import axios from "axios";
 const NewSelect = (props) => {
   const [selectValue, setSelectValue] = useState(null);
   const [options, setOptions] = useState([]);
@@ -19,13 +20,12 @@ const NewSelect = (props) => {
       const response = await fetchFilesAssociatedWithTemplate(templateId);
       const tasks = await onGetAllTasksHandler();
       const taskStatusArr = tasks.filter((task) => task.taskStatus);
-         
+
       const filteredFile = [];
       const seenFileIds = new Set();
-  
+
       for (let i = 0; i < tasks?.length; i++) {
         for (let j = 0; j < response?.length; j++) {
-         
           if (taskStatusArr[i]?.fileId == response[j]?.id) {
             if (!seenFileIds.has(response[j].id)) {
               filteredFile.push(response[j]);
@@ -35,7 +35,7 @@ const NewSelect = (props) => {
           }
         }
       }
-     
+
       const csvOptions = filteredFile.map((item) => ({
         label: item.csvFile,
         value: item.id,
@@ -50,14 +50,12 @@ const NewSelect = (props) => {
       console.error("Error fetching files:", error);
     }
   };
-  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const templates = await onGetTemplateHandler();
-        
-     
+
         const options = templates.map((item) => ({
           label: item.name,
           value: item.id,
@@ -79,7 +77,18 @@ const NewSelect = (props) => {
       fetchFile(props.selectedTemplate);
     }
   }, [props.label, props.selectedTemplate]);
-
+  const fetchHeaders = async (fileName) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:4000/getUploadedFileHeader?fileName=${fileName}`
+      );
+      const headerData = res.data.headers;
+      dataCtx.addToCsvHeader(headerData);
+      // console.log("res", res);
+    } catch (error) {
+      console.error("Error fetching headers:", error);
+    }
+  };
   const handleChange = (selectedOption) => {
     setSelectValue(selectedOption.value);
 
@@ -92,9 +101,10 @@ const NewSelect = (props) => {
       fetchFile(selectedOption.value);
     } else if (props.label === "Select Csv Files 2") {
       dataCtx.addSecondInputFileName(selectedOption.label);
+      fetchHeaders(selectedOption.label);
     } else if (props.label === "Select Zip Files") {
       dataCtx.setUploadZipImage(selectedOption.label);
-      dataCtx.modifyFileId(selectedOption.value)
+      dataCtx.modifyFileId(selectedOption.value);
     }
   };
   const customStyles = {

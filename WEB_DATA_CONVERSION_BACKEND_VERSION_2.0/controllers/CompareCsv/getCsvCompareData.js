@@ -120,10 +120,9 @@ const getCsvCompareData = async (req, res) => {
           "../",
           "../",
           "extractedFiles",
-          imageDirectoryPath+".zip",
-         
+          imageDirectoryPath,
         );
-
+       
         const imageFolders = getAllDirectories(imageFile);
         imageFolders.forEach((folder) => {
           imageFile = path.join(imageFile, folder);
