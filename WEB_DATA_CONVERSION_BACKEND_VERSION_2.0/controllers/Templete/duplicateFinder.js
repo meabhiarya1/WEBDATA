@@ -18,8 +18,18 @@ const duplicateFinder = async (req, res, next) => {
       return res.status(404).json({ error: "File not found" });
     }
 
-    const filename = fileData.csvFile;
-    const filePath = path.resolve(__dirname, "../../csvFile", filename);
+    let filePath = "";
+
+    if (fileData.masterFile) {
+      filePath = path.resolve(
+        __dirname,
+        "../../PartAFolders/ScannedCsvData",
+        fileData.csvFile
+      );
+    } else {
+      const filename = fileData.csvFile;
+      filePath = path.resolve(__dirname, "../../csvFile", filename);
+    }
 
     try {
       await fs.access(filePath);
