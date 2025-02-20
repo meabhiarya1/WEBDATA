@@ -5,7 +5,6 @@ const PartA = require("../controllers/PartA/PartA");
 
 const router = express.Router();
 
-router.post("/uploadfiles", uploadCsvPartA, PartA);
-
+router.post("/uploadfiles", authMiddleware, uploadCsvPartA, PartA);
 
 module.exports = router;
