@@ -1,13 +1,13 @@
-const { Parser } = require("json2csv");
-function convertJSONToCSV(jsonData) {
-    try {
-      const parser = new Parser();
-      const csvData = parser.parse(jsonData);
-      return csvData;
-    } catch (error) {
-      console.error("Error converting JSON to CSV:", error);
-      return null;
-    }
-  }
+const { parse } = require("json2csv");
+const fs = require("fs");
 
-  module.exports = convertJSONToCSV;
+const jsonToCSV = async (jsonData, filePath) => {
+  try {
+    const csv = parse(jsonData);
+    await fs.promises.writeFile(filePath, csv, "utf-8"); // Overwrite the original file
+  } catch (error) {
+    throw new Error("Error writing CSV file: " + error.message);
+  }
+};
+
+module.exports = jsonToCSV;
