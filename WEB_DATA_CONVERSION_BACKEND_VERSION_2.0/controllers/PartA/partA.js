@@ -2,58 +2,36 @@ const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
 
 const PartA = async (req, res) => {
-  console.log("PartA controller");
-  // const { userName, mobile, role, email, password, permissions } =
-  //   req.body.userData;
-  // const userRole = req.role;
-
-  // if (userRole !== "Admin") {
-  //   return res.status(500).json({ message: "Only Admin can create user" });
-  // }
-  // if (!userName || !mobile || !email || !password || !permissions || !role) {
-  //   return res.status(422).json({ error: "Please fill all fields properly" });
-  // }
-  // if (mobile.length !== 10) {
-  //   return res
-  //     .status(422)
-  //     .json({ error: "Mobile number should be exactly 10 digits" });
-  // }
-
-  // const parsedPermissions =
-  //   typeof permissions === "string" ? JSON.parse(permissions) : permissions;
-
-  // try {
-  //   const userExist = await User.findOne({ where: { email } });
-  //   const mobileExist = await User.findOne({ where: { mobile } });
-  //   const userNameExist = await User.findOne({ where: { userName } });
-  //   if (userNameExist) {
-  //     return res.status(500).json({ error: "Username already exists" });
-  //   } else if (mobileExist) {
-  //     return res.status(500).json({ error: "Mobile no. already exists" });
-  //   } else if (userExist) {
-  //     return res.status(500).json({ error: "Email already exists" });
-  //   } else {
-  //     const hashedPassword = await bcrypt.hash(password, 12);
-  //     const newUser = await User.create({
-  //       userName,
-  //       mobile,
-  //       email,
-  //       password: hashedPassword,
-  //       role,
-  //       permissions: parsedPermissions,
-  //     });
-  //     return res
-  //       .status(201)
-  //       .json({ message: "User created successfully", newUser });
-  //   }
-  // } catch (err) {
-  //   return res.status(400).json({ message: err.message });
-  // }
   try {
-    console.log(req.body);
-    return res.status(200).json({ message: "PartA controller" });
+    // Get uploaded files and extracted images from request
+    const { csv1, csv2, zipFile } = req.uploadedFiles || {};
+    const extractedImages = req.extractedImages || [];
+
+    // Log uploaded files
+    console.log("CSV 1:", csv1);
+    console.log("CSV 2:", csv2);
+    console.log("ZIP File:", zipFile);
+    console.log("Extracted Images:", extractedImages);
+
+    // Check if files were properly uploaded
+    if (!csv1 || !csv2 || !zipFile) {
+      return res.status(400).json({ error: "Missing required files" });
+    }
+
+    // Process extracted images if needed
+    if (extractedImages.length === 0) {
+      console.warn("No images extracted from ZIP file.");
+    }
+
+    return res.status(200).json({
+      message: "Files processed successfully",
+      uploadedFiles: { csv1, csv2, zipFile },
+      extractedImages,
+    });
   } catch (error) {
+    console.error("Error in PartA controller:", error);
     return res.status(500).json({ message: error.message });
   }
 };
+
 module.exports = PartA;
