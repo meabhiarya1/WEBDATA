@@ -34,9 +34,9 @@ const errorData = async (req, res) => {
 
     const errorData = [];
 
-    scannedData.map((row) => {
-      if (!masterRollNos.includes(row.ROLL)) {
-        errorData.push(row);
+    scannedData.map((scannedRow) => {
+      if (!masterRollNos.includes(scannedRow.ROLL)) {
+        errorData.push(scannedRow);
       }
     });
 
