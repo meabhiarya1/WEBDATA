@@ -27,7 +27,7 @@ const PartA = async (req, res) => {
     let csv2Json = [];
     try {
       csv2Json = await convertToJSON(csv2.path);
-      console.log("CSV 2 JSON:", csv2Json);
+      // console.log("CSV 2 JSON:", csv2Json);
     } catch (err) {
       console.error("Error converting CSV2 to JSON:", err);
       return res.status(500).json({ error: "Failed to convert CSV2 to JSON" });
@@ -48,7 +48,7 @@ const PartA = async (req, res) => {
       templeteId: templeteId, // Set templeteId
     });
 
-    console.log("File data saved successfully:", newFileEntry);
+    // console.log("File data saved successfully:", newFileEntry);
     return res.status(200).json({
       message: "Files processed successfully",
       csvDataLength: csv2Json.length, // Send the length of the CSV data
