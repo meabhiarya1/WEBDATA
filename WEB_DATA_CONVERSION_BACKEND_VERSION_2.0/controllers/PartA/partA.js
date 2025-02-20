@@ -38,7 +38,7 @@ const PartA = async (req, res) => {
       zipFile.filename,
       path.extname(zipFile.filename)
     ); // Extract filename without extension
-    const zipExtractedPath = `PartAFolders\\ExtractedImages\\${zipFolderName}\\Data`;
+    const zipExtractedPath = `${zipFolderName}`;
 
     // Store file tracking information in the database
     const newFileEntry = await Files.create({

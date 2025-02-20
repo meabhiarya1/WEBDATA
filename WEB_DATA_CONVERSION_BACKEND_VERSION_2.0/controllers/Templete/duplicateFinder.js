@@ -84,6 +84,8 @@ const duplicateFinder = async (req, res, next) => {
 
     const duplicateRows = duplicateValues.flatMap((value) => duplicates[value]);
 
+    console.log(duplicates)
+
     return res.status(200).json({ duplicates: duplicateRows });
   } catch (error) {
     console.error("Error finding duplicates:", error);

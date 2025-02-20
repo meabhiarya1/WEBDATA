@@ -37,9 +37,12 @@ const imageDirectoryPath = path.join(
   "OmrImages",
   "Images_2024-05-04T04-38-30-972Z/005.jpg"
 );
+
 // Serve static files from the 'extractedFiles' directory
 app.use("/images", express.static(imageDirectoryPath));
 app.use("/images", express.static(path.join(__dirname, "extractedFiles")));
+app.use("/images", express.static(path.join(__dirname, "PartAFolders")));
+
 app.use(express.static(builtPath));
 
 app.use("/users", userRoutes);
