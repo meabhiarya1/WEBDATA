@@ -116,7 +116,7 @@ const extractImagesFromZip = async (zipFilePath, zipFileName) => {
 const upload = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
-    console.log(file, "file");
+    // console.log(file, "file");
     const allowedMimeTypes = [
       "text/csv", // CSV files
       "application/zip", // ZIP files
@@ -173,7 +173,7 @@ const uploadCsvPartA = (req, res, next) => {
         zipFileName
       );
       req.extractedImages = extractedImages; // Store extracted images in request
-      console.log("Extracted Images:", extractedImages);
+      // console.log("Extracted Images:", extractedImages);
       next();
     } catch (error) {
       console.error("Error extracting images:", error);
