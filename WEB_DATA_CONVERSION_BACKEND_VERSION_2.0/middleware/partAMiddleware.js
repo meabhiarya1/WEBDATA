@@ -1,6 +1,7 @@
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const unzipper = require("unzipper");
 
 // Define the parent folder and subfolders
 const baseFolder = "PartAFolders";
@@ -22,13 +23,11 @@ Object.values(folders).forEach((folder) => {
   }
 });
 
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err);
-});
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection:", reason);
-});
+// Create ExtractedImages folder
+const extractedFolder = path.join(baseFolder, "ExtractedImages");
+if (!fs.existsSync(extractedFolder)) {
+  fs.mkdirSync(extractedFolder, { recursive: true });
+}
 
 // Function to generate a timestamp
 const getTimestamp = () => {
@@ -70,6 +69,49 @@ const storage = multer.diskStorage({
   },
 });
 
+// Function to extract images from ZIP
+const extractImagesFromZip = async (zipFilePath, zipFileName) => {
+  return new Promise((resolve, reject) => {
+    const extractedImages = [];
+
+    // Extract ZIP filename without extension
+    const zipNameWithoutExt = path.basename(
+      zipFileName,
+      path.extname(zipFileName)
+    );
+
+    // Create a unique folder for this extraction using the ZIP file's timestamped name
+    const zipFolder = path.join(extractedFolder, zipNameWithoutExt);
+    if (!fs.existsSync(zipFolder)) {
+      fs.mkdirSync(zipFolder, { recursive: true });
+    }
+
+    fs.createReadStream(zipFilePath)
+      .pipe(unzipper.Parse())
+      .on("entry", async (entry) => {
+        const fileName = entry.path;
+        const fileExtension = path.extname(fileName).toLowerCase();
+        const allowedImageTypes = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+
+        if (allowedImageTypes.includes(fileExtension)) {
+          const outputPath = path.join(zipFolder, fileName);
+          const outputDir = path.dirname(outputPath);
+
+          if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+          }
+
+          extractedImages.push(outputPath);
+          entry.pipe(fs.createWriteStream(outputPath));
+        } else {
+          entry.autodrain();
+        }
+      })
+      .on("close", () => resolve(extractedImages))
+      .on("error", (err) => reject(err));
+  });
+};
+
 // Multer setup to handle specific file fields
 const upload = multer({
   storage: storage,
@@ -88,7 +130,7 @@ const upload = multer({
     }
 
     cb(null, true);
-  }, // <-- Closing brace was missing here
+  },
 }).fields([
   { name: "csv1", maxCount: 1 }, // MasterData folder
   { name: "csv2", maxCount: 1 }, // ScannedCsvData folder
@@ -96,33 +138,14 @@ const upload = multer({
 ]);
 
 const uploadCsvPartA = (req, res, next) => {
-  upload(req, res, (err) => {
+  upload(req, res, async (err) => {
     if (err) {
       console.error("Multer error:", err);
-
-      if (err instanceof multer.MulterError) {
-        // Handle multer-specific errors
-        return res
-          .status(400)
-          .json({ error: "Multer error", details: err.message });
-      } else if (err.message === "Invalid file field name") {
-        return res.status(400).json({ error: "Invalid file field name" });
-      } else if (
-        err.message.includes("Only CSV, Excel, and ZIP files are allowed")
-      ) {
-        return res.status(400).json({
-          error: "Invalid file type. Only CSV, Excel, and ZIP allowed",
-        });
-      }
-
       return res
         .status(500)
         .json({ error: "Internal server error", details: err.message });
     }
 
-    // console.log("Uploaded files:", req.files); // Debugging
-
-    // Validate that all required files are uploaded
     if (
       !req.files ||
       !req.files.csv1 ||
@@ -140,7 +163,24 @@ const uploadCsvPartA = (req, res, next) => {
       zipFile: req.files.zipFile[0],
     };
 
-    next();
+    // Extract images from ZIP file
+    try {
+      const zipFilePath = req.files.zipFile[0].path;
+      const zipFileName = req.files.zipFile[0].filename; // Get uploaded ZIP filename
+
+      const extractedImages = await extractImagesFromZip(
+        zipFilePath,
+        zipFileName
+      );
+      req.extractedImages = extractedImages; // Store extracted images in request
+      console.log("Extracted Images:", extractedImages);
+      next();
+    } catch (error) {
+      console.error("Error extracting images:", error);
+      return res
+        .status(500)
+        .json({ error: "Failed to extract images", details: error.message });
+    }
   });
 };
 
