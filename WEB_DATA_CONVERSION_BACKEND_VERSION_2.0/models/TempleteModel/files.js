@@ -19,6 +19,11 @@ const Files = sequelize.define("filedata", {
     type: Sequelize.STRING,
     defaultValue: null,
   },
+
+  masterFile: {
+    type: Sequelize.STRING,
+    defaultValue: null,
+  },
 });
 
 module.exports = Files;

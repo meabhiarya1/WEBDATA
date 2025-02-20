@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-require("dotenv").config()
+require("dotenv").config();
 const sequelize = require("./utils/database");
 const bodyParser = require("body-parser");
 const templeteRoutes = require("./routes/templete");
@@ -12,10 +12,8 @@ const User = require("./models/User");
 const MetaData = require("./models/TempleteModel/metadata");
 const Files = require("./models/TempleteModel/files");
 const UpdatedData = require("./models/TempleteModel/updatedData");
-const Settings = require("./routes/settings")
-
-
-
+const Settings = require("./routes/settings");
+const PartARoutes = require("./routes/partA");
 
 const upload = require("./routes/upload");
 const path = require("path");
@@ -44,18 +42,17 @@ app.use("/images", express.static(imageDirectoryPath));
 app.use("/images", express.static(path.join(__dirname, "extractedFiles")));
 app.use(express.static(builtPath));
 
-
 app.use("/users", userRoutes);
 app.use(upload);
 app.use(compareCsv);
 app.use(templeteRoutes);
 app.use("/settings", Settings);
+app.use("/partA", PartARoutes);
 
 // Handle all other routes and serve 'index.html'
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
-
 
 // Define associations with cascading deletes
 Templete.hasMany(MetaData, {
@@ -149,8 +146,6 @@ MappedData.belongsTo(Templete, {
   },
   onUpdate: "CASCADE",
 });
-
-
 
 sequelize
   .sync({ force: !true })
