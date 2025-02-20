@@ -14,7 +14,7 @@ const assignUser = async (req, res, next) => {
         min: min,
         taskName: taskName,
         currentIndex: min,
-        moduleType: "Data Entry",
+        moduleType: moduleType || "Data Entry",
         correctedCsvFilePath: correctedFilePath,
         errorFilePath: errorFilePath,
         imageDirectoryPath: imageDirectoryPath
